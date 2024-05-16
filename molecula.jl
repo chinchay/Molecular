@@ -1,10 +1,10 @@
-module SampleModule
+module MoleculaModule
 
 import ..AtomModule: Atom
 
-export Sample
+export Molecula
 
-mutable struct Sample
+mutable struct Molecula
     vAtoms :: Vector{Atom}
 
 end

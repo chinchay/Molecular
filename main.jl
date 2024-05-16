@@ -1,14 +1,16 @@
 include("atom.jl")
-include("sample.jl")
+include("molecula.jl")
 
 using .AtomModule
-using .SampleModule
+using .MoleculaModule
 
 
 
 atom1 = Atom(0, 1, 2)
-sample = Sample([atom1])
+atom2 = Atom(1, 3, 3)
+molecula = Molecula([atom1, atom2])
 
-for a in sample.vAtoms
-    println("atom1 x = ", a.x, " ", a.y, " ", a.z)
+
+for a in molecula.vAtoms
+    println("atom x = ", a.x, " ", a.y, " ", a.z)
 end
