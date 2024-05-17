@@ -26,6 +26,13 @@ function Atom()
     return Atom(r, v, a)
 end
 
+function Atom(pos::Vector, vel::Vector)
+    r = Position(pos[1], pos[2], pos[3])
+    v = Velocity(vel[1], vel[2], vel[3])
+    a = Acceleration(0, 0, 0)
+    return Atom(r, v, a)
+end
+
 function move(atom::Atom)
     atom._r.x += DT * atom._v.x
     atom._r.y += DT * atom._v.y
