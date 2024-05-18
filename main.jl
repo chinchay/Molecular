@@ -1,16 +1,22 @@
 include("atom.jl")
+include("dynamics.jl")
 
 using .AtomModule
 import .AtomModule: move
+import .DynamicsModule: updateAccelarationLJ
 using Plots
 
-pos = [0, 0, 0]
+pos = [0, 1, 0]
 vel = [1, 0, 0]
-atom1 = Atom(pos, vel)
+acc = [0, 0, 0]
+mass = 100
+atom1 = Atom(pos, vel, acc, mass)
 
-pos = [4, 0, 0]
+pos = [1, 0, 0]
 vel = [0, 1, 0]
-atom2 = Atom(pos, vel)
+acc = [0, 0, 0]
+mass = 1
+atom2 = Atom(pos, vel, acc, mass)
 
 n = 100
 anim = @animate for i = 1:n
@@ -18,8 +24,11 @@ anim = @animate for i = 1:n
     move(atom2)
     r1 = atom1._r
     r2 = atom2._r
-    scatter([r1.x], [r1.y], [r1.z], legend=false, camera=(30,30), xlim=(-2, 10), ylim=(-2, 10), zlim=(-2, 10))
-    scatter!([r2.x], [r2.y], [r2.z], legend=false, camera=(30,30), xlim=(-2, 10), ylim=(-2, 10), zlim=(-2, 10))
+    scatter( [r1[1]], [r1[2]], [r1[3]], legend=false, camera=(0, 90), xlim=(-1, 10), ylim=(-2, 10), zlim=(-1, 1), xlabel="X", ylabel="Y")
+    scatter!([r2[1]], [r2[2]], [r2[3]], legend=false, camera=(0, 90), xlim=(-1, 10), ylim=(-2, 10), zlim=(-1, 1), xlabel="X", ylabel="Y")
+    # println("i = ", i, " ", r1[1], " - ", r1[2])
+
+    updateAccelarationLJ(atom1, atom2)
 end
 
 gif(anim, "molecula.gif", fps=30)
