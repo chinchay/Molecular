@@ -2,7 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from atom import Atom
-from dynamics import updateLennarJonesAcc
+from system import System
+from dynamics import updateLennarJonesAcc, applyThermalBath, computeMechanicalEnergy, computeDistance, computeKinetic
 # from . import constants
 from constants import RMIN
 
@@ -21,12 +22,20 @@ atom2.vel = np.asarray([0, 0, 0])
 atom2.acc = np.asarray([0, 0, 0])
 atom2.mass = 0.5
 
-n = 1200
+system = System([atom1, atom2])
+
+initialEnergy = computeMechanicalEnergy(system)
+desiredKinetic = initialEnergy / 2
+
+n = 1201
 fig, ax = plt.subplots()
 ax.set_xlim(-1, 4), ax.set_xticks([])
 scatter1 = ax.scatter([], [], color="b")
 scatter2 = ax.scatter([], [], color="r")
 
+nPeriod = 200
+
+isInsideBall = False
 for i in range(n):
     atom1.move()
     atom2.move()
@@ -46,6 +55,21 @@ for i in range(n):
     plt.pause(0.01)
 
     updateLennarJonesAcc(atom1, atom2)
+
+    _, distance = computeDistance(atom1, atom2)
+
+    energy = computeMechanicalEnergy(system)
+
+    if abs(distance - RMIN) < 0.01:
+        if not isInsideBall:
+            isInsideBall = True
+
+            kinetic = computeKinetic(system)
+            print("Applying thermal bath. Kinetic energy = ", kinetic)
+
+            applyThermalBath(system, desiredKinetic)           
+    else:
+        isInsideBall = False
 
 plt.show()
 
