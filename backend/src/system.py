@@ -13,5 +13,14 @@ class System:
     #         atom = Atom()
     #         listAtom.append(atom)
 
+    def zeroResultantForces(self):
+        for atom in self.listAtom:
+            atom.resultantForce[:] = 0
+
+    def move(self):
+        for atom in self.listAtom:
+            atom.move()
+
+
 
 

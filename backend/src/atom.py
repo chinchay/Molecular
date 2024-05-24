@@ -8,6 +8,7 @@ class Atom:
         self.vel = np.zeros(3, dtype=float)
         self.acc = np.zeros(3, dtype=float)
         self.mass = 1
+        self.resultantForce = np.zeros(3, dtype=float)
 
     # @property
     # def pos(self):

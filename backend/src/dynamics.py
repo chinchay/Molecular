@@ -19,14 +19,39 @@ def computeLennardJonesForce(distance: float):
     force = 48 * EPSILON * (repulsive - attractive)
     return force
 
-def updateLennarJonesAcc(atom1: Atom, atom2: Atom):
+# def updateLennarJonesAcc(atom1: Atom, atom2: Atom):
+#     dR21, distance = computeDistance(atom1, atom2)
+#     force = computeLennardJonesForce(distance)
+#     u21 = dR21 / distance
+#     force21 = force * u21
+#     force12 = -force21
+#     atom2.acc = force21 / atom2.mass
+#     atom1.acc = force12 / atom1.mass
+
+def computeForceVector(atom1: Atom, atom2: Atom):
     dR21, distance = computeDistance(atom1, atom2)
     force = computeLennardJonesForce(distance)
     u21 = dR21 / distance
     force21 = force * u21
-    force12 = -force21
-    atom2.acc = force21 / atom2.mass
-    atom1.acc = force12 / atom1.mass
+    return force21
+
+def updateResultantForces(system: System):
+    system.zeroResultantForces()
+    nAtoms = len(system.listAtom)
+    for i in range(nAtoms):
+        atomI = system.listAtom[i]
+        for j in range(i + 1, nAtoms):
+            atomJ = system.listAtom[j]
+            forceJI = computeForceVector(atomI, atomJ)
+            forceIJ = -forceJI
+            atomJ.resultantForce += forceJI
+            atomI.resultantForce += forceIJ
+
+
+def updateAcc(system: System):
+    updateResultantForces(system)
+    for atom in system.listAtom:
+        atom.acc = atom.resultantForce / atom.mass
 
 def computeKinetic(system: System):
     kinetic = 0
