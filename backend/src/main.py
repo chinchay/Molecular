@@ -8,18 +8,18 @@ from dynamics import updateLennarJonesAcc, applyThermalBath, computeMechanicalEn
 from constants import RMIN
 
 atom1 = Atom()
-atom1.pos = np.asarray([0, 0, 0])
-atom1.vel = np.asarray([0, 0, 0])
-atom1.acc = np.asarray([0, 0, 0])
+atom1.pos = np.asarray([0, 0, 0], dtype=float)
+atom1.vel = np.asarray([0, 0, 0], dtype=float)
+atom1.acc = np.asarray([0, 0, 0], dtype=float)
 atom1.mass = 100
 
 
 atom2 = Atom()
 delta = 0.1
 x = RMIN + delta
-atom2.pos = np.asarray([x, 0, 0])
-atom2.vel = np.asarray([0, 0, 0])
-atom2.acc = np.asarray([0, 0, 0])
+atom2.pos = np.asarray([x, 0, 0], dtype=float)
+atom2.vel = np.asarray([0, 0, 0], dtype=float)
+atom2.acc = np.asarray([0, 0, 0], dtype=float)
 atom2.mass = 0.5
 
 system = System([atom1, atom2])

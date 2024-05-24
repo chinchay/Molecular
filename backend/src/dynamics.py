@@ -6,7 +6,11 @@ from math import pow, sqrt
 
 def computeDistance(atom1: Atom, atom2: Atom):
     dR21 = atom2.pos - atom1.pos
-    distance = np.linalg.norm(dR21)
+
+    # distance = np.linalg.norm(dR21)
+    # this is more efficient:
+    distance = sqrt((dR21[0] ** 2) + (dR21[1] ** 2) + (dR21[2] ** 2))
+    
     return dR21, distance
 
 def computeLennardJonesForce(distance: float):
@@ -17,9 +21,9 @@ def computeLennardJonesForce(distance: float):
 
 def updateLennarJonesAcc(atom1: Atom, atom2: Atom):
     dR21, distance = computeDistance(atom1, atom2)
-    absForce = computeLennardJonesForce(distance)
+    force = computeLennardJonesForce(distance)
     u21 = dR21 / distance
-    force21 = absForce * u21
+    force21 = force * u21
     force12 = -force21
     atom2.acc = force21 / atom2.mass
     atom1.acc = force12 / atom1.mass
