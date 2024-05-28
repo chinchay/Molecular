@@ -58,29 +58,29 @@ def updateResultantForces(system: System):
             atomI.resultantForce += forceIJ
 
 
-# def updateAcc(system: System):
-#     updateResultantForces(system)
-#     for atom in system.listAtom:
-#         atom.acc = atom.resultantForce / atom.mass
+def updateAcc(system: System):
+    updateResultantForces(system)
+    for atom in system.listAtom:
+        atom.acc = atom.resultantForce / atom.mass
 
-def updateAcc(atoms: Atoms):
-    calculate(atoms) # compute energies and forces
-    atoms.accelerations = atoms.forces / atoms.masses
+# def updateAcc(atoms: Atoms):
+#     calculate(atoms) # compute energies and forces
+#     atoms.accelerations = atoms.forces / atoms.masses
 
 
-# def computeKinetic(system: System):
-#     kinetic = 0
-#     for atom in system.listAtom:
-#         vel = atom.vel
-#         mass = atom.mass
-#         kinetic += np.dot(vel, vel) * mass
-#     kinetic *= 0.5
-#     return kinetic
-
-def computeKinetic(atoms: Atoms):
-    squaredVelocityperAtom = np.sum(atoms.velocities ** 2, axis=1)
-    kinetic = 0.5 * np.sum(atoms.masses * squaredVelocityperAtom)
+def computeKinetic(system: System):
+    kinetic = 0
+    for atom in system.listAtom:
+        vel = atom.vel
+        mass = atom.mass
+        kinetic += np.dot(vel, vel) * mass
+    kinetic *= 0.5
     return kinetic
+
+# def computeKinetic(atoms: Atoms):
+#     squaredVelocityperAtom = np.sum(atoms.velocities ** 2, axis=1)
+#     kinetic = 0.5 * np.sum(atoms.masses * squaredVelocityperAtom)
+#     return kinetic
 
 def computeLennardJonesPot(atom1: Atom, atom2: Atom):
     dR21, distance = computeDistance(atom1, atom2)
@@ -148,17 +148,17 @@ def calculate(atoms: Atoms):
         atoms.forces[i] = computeForceLJ(relatPos, c6, c12, squaredDist)
         atoms.potentialEnergies[i] = computePotentialLJ(c6, c12)
 
-# def computeMechanicalEnergy(system: System):
-#     kinetic = computeKinetic(system)
-#     potential = computePotential(system)
-#     energy = kinetic + potential
-#     return energy
-
-def computeMechanicalEnergy(atoms: Atoms):
-    kinetic = computeKinetic(atoms)
-    potential = computePotential(atoms)
+def computeMechanicalEnergy(system: System):
+    kinetic = computeKinetic(system)
+    potential = computePotential(system)
     energy = kinetic + potential
     return energy
+
+# def computeMechanicalEnergy(atoms: Atoms):
+#     kinetic = computeKinetic(atoms)
+#     potential = computePotential(atoms)
+#     energy = kinetic + potential
+#     return energy
 
 
 # This is what should be
@@ -169,24 +169,24 @@ def computeMechanicalEnergy(atoms: Atoms):
 #         atom.vel *= lamb
 
 # # This is what worked at this level, having only two atoms
-# def applyThermalBath(system: System, desiredMechanicalEnergy: float):
-#     currentKinetic = computeKinetic(system)
-#     try:
-#         lamb = sqrt(abs(desiredMechanicalEnergy / currentKinetic))
-#     except:
-#         print("Error with kinetic as denominotar = ", currentKinetic)
-#         return
-
-#     for atom in system.listAtom:
-#         atom.vel *= lamb
-
-# This is what worked at this level, having only two atoms
-def applyThermalBath(atoms: Atoms, desiredMechanicalEnergy: float):
-    currentKinetic = computeKinetic(atoms)
+def applyThermalBath(system: System, desiredMechanicalEnergy: float):
+    currentKinetic = computeKinetic(system)
     try:
         lamb = sqrt(abs(desiredMechanicalEnergy / currentKinetic))
     except:
         print("Error with kinetic as denominotar = ", currentKinetic)
         return
+
+    for atom in system.listAtom:
+        atom.vel *= lamb
+
+# # This is what worked at this level, having only two atoms
+# def applyThermalBath(atoms: Atoms, desiredMechanicalEnergy: float):
+#     currentKinetic = computeKinetic(atoms)
+#     try:
+#         lamb = sqrt(abs(desiredMechanicalEnergy / currentKinetic))
+#     except:
+#         print("Error with kinetic as denominotar = ", currentKinetic)
+#         return
     
-    atoms.velocities *= lamb
+#     atoms.velocities *= lamb

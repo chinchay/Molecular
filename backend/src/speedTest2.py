@@ -2,9 +2,8 @@ from cProfile import Profile
 from pstats import SortKey, Stats
 
 import numpy as np
-from atom import Atom
-from system import System
-from dynamics import applyThermalBath, computeMechanicalEnergy, computeDistance, computeKinetic, updateAcc
+from atoms import Atoms
+from dynamics import applyThermalBath, computeMechanicalEnergy, computeDistance, computeKinetic, updateAcc, calculate
 from constants import RMIN
 
 x = 6
@@ -12,9 +11,11 @@ y = 6
 z = 6
 x2 = 12
 y2 = 12
+nAtoms = 30
 delta = 0.1
 d = RMIN + delta
-listPos = np.asarray(
+atoms = Atoms(nAtoms)
+atoms.positions = np.asarray(
     [
         [ 0,  0, 0],
         [ d,  0, 0],
@@ -55,24 +56,22 @@ listPos = np.asarray(
     ],
     dtype=float
 )
+nAtoms, _ = atoms.positions.shape
+atoms.velocities = np.zeros((nAtoms, 3), dtype=float)
+atoms.accelerations = np.zeros((nAtoms, 3), dtype=float)
 
-
-listAtom = []
-for (i, pos) in enumerate(listPos):
-    atom = Atom()
-    atom.pos = np.asarray(pos.copy(), dtype=float)
-    atom.vel = np.asarray([0, 0, 0], dtype=float)
-    atom.acc = np.asarray([0, 0, 0], dtype=float)
+for i in range(nAtoms):
     if i in [0, 5, 15, 20, 25]:
-        atom.mass = 100
+        atoms.masses[i] = 100
     else:
-        atom.mass = 0.5
-    #
-    listAtom.append(atom)
+        atoms.masses[i] = 0.5
+#
 
-system = System(listAtom)
 
-initialEnergy = computeMechanicalEnergy(system)
+calculate(atoms)
+kineticEnergy = computeKinetic(atoms)
+potentialEnergy = np.sum(atoms.potentialEnergies)
+initialEnergy = kineticEnergy + potentialEnergy
 desiredKinetic = initialEnergy / 2
 
 n = 20000 #200000
@@ -81,12 +80,12 @@ with Profile() as profile:
 
     isInsideBall = False
     for i in range(n):
-        system.move()
+        atoms.move()
 
         # updateLennarJonesAcc(atom1, atom2)
-        updateAcc(system)
+        updateAcc(atoms)
 
-        _, distance = computeDistance(listAtom[0], listAtom[1]) #<<< include other atoms!
+        distance = np.linalg.norm(atoms.positions[0] - atoms.positions[1])
 
         if abs(distance - RMIN) < 0.01:
             if not isInsideBall:
@@ -95,7 +94,7 @@ with Profile() as profile:
                 # kinetic = computeKinetic(system)
                 # print("Applying thermal bath. Kinetic energy = ", kinetic)
 
-                applyThermalBath(system, desiredKinetic)           
+                applyThermalBath(atoms, desiredKinetic)  
         else:
             isInsideBall = False
     #

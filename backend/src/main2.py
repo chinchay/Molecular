@@ -1,179 +1,84 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from atom import Atom
-from system import System
-from dynamics import applyThermalBath, computeMechanicalEnergy, computeDistance, computeKinetic, updateAcc
+from atoms import Atoms
+from dynamics import applyThermalBath, computeMechanicalEnergy, computeDistance, computeKinetic, updateAcc, calculate
 # from . import constants
 from constants import RMIN
 
-listAtom = []
-atom = Atom()
-atom.pos = np.asarray([0, 0, 0], dtype=float)
-atom.vel = np.asarray([0, 0, 0], dtype=float)
-atom.acc = np.asarray([0, 0, 0], dtype=float)
-atom.mass = 100
-listAtom.append(atom)
-
-atom = Atom()
 delta = 0.1
 d = RMIN + delta
-atom.pos = np.asarray([d, 0, 0], dtype=float)
-atom.vel = np.asarray([0, 0, 0], dtype=float)
-atom.acc = np.asarray([0, 0, 0], dtype=float)
-atom.mass = 0.5
-listAtom.append(atom)
+atoms = Atoms(5)
+atoms.positions = np.asarray(
+    [
+        [ 0,  0, 0],
+        [ d,  0, 0],
+        [ 0,  d, 0],
+        [-d,  0, 0],
+        [ 0, -d, 0],
+    ],
+    dtype=float
+)
+nAtoms, _ = atoms.positions.shape
+atoms.velocities = np.zeros((nAtoms, 3), dtype=float)
+atoms.accelerations = np.zeros((nAtoms, 3), dtype=float)
+atoms.masses[0, 0] = 100
+atoms.masses[:, 0] = 0.5
 
-atom = Atom()
-delta = 0.1
-d = RMIN + delta
-atom.pos = np.asarray([0, d, 0], dtype=float)
-atom.vel = np.asarray([0, 0, 0], dtype=float)
-atom.acc = np.asarray([0, 0, 0], dtype=float)
-atom.mass = 0.5
-listAtom.append(atom)
-
-atom = Atom()
-delta = 0.1
-d = RMIN + delta
-atom.pos = np.asarray([-d, 0, 0], dtype=float)
-atom.vel = np.asarray([0, 0, 0], dtype=float)
-atom.acc = np.asarray([0, 0, 0], dtype=float)
-atom.mass = 0.5
-listAtom.append(atom)
-
-atom = Atom()
-delta = 0.1
-d = RMIN + delta
-atom.pos = np.asarray([0, -d, 0], dtype=float)
-atom.vel = np.asarray([0, 0, 0], dtype=float)
-atom.acc = np.asarray([0, 0, 0], dtype=float)
-atom.mass = 0.5
-listAtom.append(atom)
-
-# ################################################################################
-y = 6
-atom = Atom()
-atom.pos = np.asarray([0, y, 0], dtype=float)
-atom.vel = np.asarray([0, 0, 0], dtype=float)
-atom.acc = np.asarray([0, 0, 0], dtype=float)
-atom.mass = 100
-listAtom.append(atom)
-
-atom = Atom()
-delta = 0.1
-d = RMIN + delta
-atom.pos = np.asarray([d, y, 0], dtype=float)
-atom.vel = np.asarray([0, 0, 0], dtype=float)
-atom.acc = np.asarray([0, 0, 0], dtype=float)
-atom.mass = 0.5
-listAtom.append(atom)
-
-atom = Atom()
-delta = 0.1
-d = RMIN + delta
-atom.pos = np.asarray([0, y + d, 0], dtype=float)
-atom.vel = np.asarray([0, 0, 0], dtype=float)
-atom.acc = np.asarray([0, 0, 0], dtype=float)
-atom.mass = 0.5
-listAtom.append(atom)
-
-atom = Atom()
-delta = 0.1
-d = RMIN + delta
-atom.pos = np.asarray([-d, y, 0], dtype=float)
-atom.vel = np.asarray([0, 0, 0], dtype=float)
-atom.acc = np.asarray([0, 0, 0], dtype=float)
-atom.mass = 0.5
-listAtom.append(atom)
-
-atom = Atom()
-delta = 0.1
-d = RMIN + delta
-atom.pos = np.asarray([0, y - d, 0], dtype=float)
-atom.vel = np.asarray([0, 0, 0], dtype=float)
-atom.acc = np.asarray([0, 0, 0], dtype=float)
-atom.mass = 0.5
-listAtom.append(atom)
-
-################################################################################
-x = 6
-atom = Atom()
-atom.pos = np.asarray([x, y, 0], dtype=float)
-atom.vel = np.asarray([0, 0, 0], dtype=float)
-atom.acc = np.asarray([0, 0, 0], dtype=float)
-atom.mass = 100
-listAtom.append(atom)
-
-atom = Atom()
-delta = 0.1
-d = RMIN + delta
-atom.pos = np.asarray([x + d, y, 0], dtype=float)
-atom.vel = np.asarray([0, 0, 0], dtype=float)
-atom.acc = np.asarray([0, 0, 0], dtype=float)
-atom.mass = 0.5
-listAtom.append(atom)
-
-atom = Atom()
-delta = 0.1
-d = RMIN + delta
-atom.pos = np.asarray([x, y + d, 0], dtype=float)
-atom.vel = np.asarray([0, 0, 0], dtype=float)
-atom.acc = np.asarray([0, 0, 0], dtype=float)
-atom.mass = 0.5
-listAtom.append(atom)
-
-atom = Atom()
-delta = 0.1
-d = RMIN + delta
-atom.pos = np.asarray([x - d, y, 0], dtype=float)
-atom.vel = np.asarray([0, 0, 0], dtype=float)
-atom.acc = np.asarray([0, 0, 0], dtype=float)
-atom.mass = 0.5
-listAtom.append(atom)
-
-atom = Atom()
-delta = 0.1
-d = RMIN + delta
-atom.pos = np.asarray([x, y - d, 0], dtype=float)
-atom.vel = np.asarray([0, 0, 0], dtype=float)
-atom.acc = np.asarray([0, 0, 0], dtype=float)
-atom.mass = 0.5
-listAtom.append(atom)
-
-system = System(listAtom)
-
-# for atom in system.listAtom:
-#     print(atom.pos)
-
-initialEnergy = computeMechanicalEnergy(system)
+calculate(atoms)
+kineticEnergy = computeKinetic(atoms)
+potentialEnergy = np.sum(atoms.potentialEnergies)
+initialEnergy = kineticEnergy + potentialEnergy
 desiredKinetic = initialEnergy / 2
 
 n = 320#1
 fig, ax = plt.subplots()
-ax.set_xlim(-4, 8), ax.set_xticks([])
-ax.set_ylim(-4, 8), ax.set_xticks([])
+ax.set_xlim(-4, 4), ax.set_xticks([])
+ax.set_ylim(-4, 4), ax.set_xticks([])
+scatter1 = ax.scatter([], [], color="b")
+scatter2 = ax.scatter([], [], color="r")
+scatter3 = ax.scatter([], [], color="g")
+scatter4 = ax.scatter([], [], color="k")
+scatter5 = ax.scatter([], [], color="k")
 
-nAtoms = len(system.listAtom)
-listScatter = [ax.scatter([], [], color="b") for _ in range(nAtoms)] 
+# nPeriod = 200
 
 isInsideBall = False
 for i in range(n):
-    system.move()
+    atoms.move()
 
-    for j in range(nAtoms):
-        [x, y, z] = system.listAtom[j].pos
-        x_values = [x] 
-        y_values = [y]
-        listScatter[j].set_offsets(list(zip(x_values, y_values)))
+    [x1, y1, z1] = atoms.positions[0]
+    [x2, y2, z2] = atoms.positions[1]
+    [x3, y3, z3] = atoms.positions[2]
+    [x4, y4, z4] = atoms.positions[3]
+    [x5, y5, z5] = atoms.positions[4]
 
+    x_values = [x1] 
+    y_values = [y1] 
+    scatter1.set_offsets(list(zip(x_values, y_values)))
+
+    x_values2 = [x2] 
+    y_values2 = [y2] 
+    scatter2.set_offsets(list(zip(x_values2, y_values2)))
+
+    x_values3 = [x3] 
+    y_values3 = [y3] 
+    scatter3.set_offsets(list(zip(x_values3, y_values3)))
+
+    x_values4 = [x4] 
+    y_values4 = [y4] 
+    scatter4.set_offsets(list(zip(x_values4, y_values4)))
+
+    x_values5 = [x5] 
+    y_values5 = [y5] 
+    scatter5.set_offsets(list(zip(x_values5, y_values5)))
 
     plt.pause(0.01)
 
     # updateLennarJonesAcc(atom1, atom2)
-    updateAcc(system)
+    updateAcc(atoms)
 
-    _, distance = computeDistance(listAtom[0], listAtom[1]) #<<< include other atoms!
+    distance = np.linalg.norm(atoms.positions[0] - atoms.positions[1])
 
     # energy = computeMechanicalEnergy(system)
 
@@ -181,10 +86,10 @@ for i in range(n):
         if not isInsideBall:
             isInsideBall = True
 
-            kinetic = computeKinetic(system)
+            kinetic = computeKinetic(atoms)
             print("Applying thermal bath. Kinetic energy = ", kinetic)
 
-            applyThermalBath(system, desiredKinetic)           
+            applyThermalBath(atoms, desiredKinetic)           
     else:
         isInsideBall = False
 
